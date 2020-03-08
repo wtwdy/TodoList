@@ -8,14 +8,16 @@ Description:
 
 """
 from flask_script import Manager, Shell
-
-from  app import create_app
+from flask_migrate import Migrate,MigrateCommand
+from  app import create_app,db
+from app.models import Role, User
 
 app = create_app()
 # 0.0.0.0代表任意
 # 绑定本机的所有ip，http://IP:8888
 # app.run(host='0.0.0.0',port=8888)
 manager = Manager(app)
+migrate = Migrate(app,db)
 
 @manager.command
 def tests():
@@ -29,8 +31,8 @@ def tests():
 if __name__ == '__main__':
 
     def make_shell_context():
-        return dict(app=app,name='name',age=18)
+        return dict(app=app,db=db,Role=Role,User=User)
 
     manager.add_command('shell',Shell(make_context=make_shell_context))
-
+    manager.add_command('db',MigrateCommand)
     manager.run()
