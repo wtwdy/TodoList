@@ -8,12 +8,15 @@ Description:
 
 """
 import unittest
+
+# 获取当前正在运行的app
 from flask import current_app
+
 from app import create_app
 
 class BasicsTestCase(unittest.TestCase):
     """
-    setUp()和tearDown()方法分别在各测试前后执行,并且名字以test_开头的函数都作为测试执行
+    setUp()和tearDown()方法分别在各测试前后执行,并且测试用例是以test_开头的作为测试执行
     """
     def setUp(self):
         """
@@ -26,9 +29,11 @@ class BasicsTestCase(unittest.TestCase):
         # 创建测试模块
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
+        # 将app与上下文绑定到一起
         self.app_context.push()
 
     def tearDown(self):
+        # 将app与上下文断开
         self.app_context.pop()
 
     def test_app_exists(self):

@@ -12,15 +12,12 @@ Description:
 
 from app.todo import todo
 
-@todo.route('/')
-def index():
-    return 'index'
+@todo.route('/add/')
+def add():
+    return 'todo add'
 
 
-@todo.route('/login/')
-def login():
-    return 'login'
+@todo.route('/delete/')
+def delete():
+    return 'todo delete'
 
-@todo.route('/logout/')
-def logout():
-    return 'logout'

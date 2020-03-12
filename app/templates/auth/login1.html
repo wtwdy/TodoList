@@ -1,0 +1,13 @@
+{% extends 'bootstrap/base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %} 登录页面 {% endblock %}
+
+{% for msg in get_flashed_messages() %}
+    {{ msg }}
+{% endfor %}
+
+{% block content %}
+{{ wtf.quick_form(form) }}
+{% endblock %}
+
