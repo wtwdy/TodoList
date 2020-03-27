@@ -10,14 +10,95 @@ Description:
 
 # 2.应用蓝图
 
+from flask import flash, redirect, url_for, render_template, request, current_app
+from flask_login import login_required, current_user
+
+from app import db
+from app.models import Todo, Category
 from app.todo import todo
+from app.todo.forms import AddTodoForm,EditTodoForm
 
-@todo.route('/add/')
+
+@todo.route('/')
+def index():
+    return 'index'
+
+@todo.route('/add/',methods=['GET','POST'])
+@login_required
 def add():
-    return 'todo add'
+    form = AddTodoForm()
+    if form.validate_on_submit():
+        # 获取用户提交的内容
+        content = form.content.data
+        category_id = form.category.data  # 表单里存储的是整形
+        # 添加到数据库中
+        todo = Todo(content=content,
+                    category_id=category_id,
+                    user_id=current_user.id)
+        db.session.add(todo)
+        flash("添加任务成功！",category='success')
+        return redirect(url_for('todo.list'))
+    # print(Category.query.all())
+    # return render_template('todo/add.html',form=form)
+
+# 根据id删除任务
+@todo.route('/delete/<int:id>')
+@login_required
+def delete(id):
+    todo = Todo.query.filter_by(id=id).first()
+    db.session.delete(todo)
+    flash('任务更新成功',category='success')
+    return redirect(url_for('todo.list'))
 
 
-@todo.route('/delete/')
-def delete():
-    return 'todo delete'
+@todo.route('/edit/<int:id>',methods=['GET','POST'])
+def edit(id):
+    form = EditTodoForm()
+    # 重要：编辑时需要获取原先任务的信息,并显示到表单中
+    todo = Todo.query.filter_by(id=id).first()
+    form.content.data = todo.content
+    form.category.data = todo.category_id
+    if form.validate_on_submit():
+        # 更新时获取表单数据一定要使用request.form方法获取
+        # 而form.content.data并不能获取用户更新后提交的表单内容
+        content = request.form.get('content')
+        category_id = request.form.get('category')
+        # 更新到数据库里面
+        todo.content = content
+        todo.category_id = category_id
+        db.session.add(todo)
+        flash('任务已更新',category='success')
+        return redirect(url_for('todo.list'))
+    return render_template('todo/edit.html',form=form)
 
+# 查看任务
+@todo.route('/list/')
+@login_required
+def list():
+    form = AddTodoForm()
+    page = int(request.args.get('page',1))
+    # 任务显示需要分页,每个用户只能查看自己的任务
+    todoPageObj = Todo.query.filter_by(user_id=current_user.id).paginate(
+        page,per_page=current_app.config['PER_PAGE']
+    )
+    return render_template('todo/list.html',todoObj=todoPageObj, form=form)
+
+
+# 修改任务状态为完成
+@todo.route('/done/<int:id>/')
+@login_required
+def done(id):
+   todo = Todo.query.filter_by(id=id).first()
+   todo.status = True
+   db.session.add(todo)
+   flash('修改状态成功')
+   return redirect(url_for('todo.list'))
+# 修改任务状态为未完成
+@todo.route('/undo/<int:id>')
+@login_required
+def undo(id):
+   todo = Todo.query.filter_by(id=id).first()
+   todo.status = False
+   db.session.add(todo)
+   flash("修改状态成功")
+   return redirect(url_for('todo.list'))

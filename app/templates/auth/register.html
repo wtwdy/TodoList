@@ -32,10 +32,8 @@
 <div class="login layui-anim layui-anim-up">
     <div class="title">任务清单系统注册</div>
     <div id="darkbannerwrap"></div>
-    {% for msg in get_flashed_messages() %}
-        {{ msg }}
-    {% endfor %}
-       {% include 'flash.html' %}
+
+    {% include 'flash.html' %}
     <form method="post" class="layui-form" action="/register/">
 {#        <input id="csrf_token" name="csrf_token" type="hidden" value="ImQ3OWZlMmYzNjNiMzRhMzI1Y2Q2NmY2ZTJlODJlZGRlNmM2ZDc1MGYi.XmScEg.PbcmAeMX-sMp89qhe-3W_LiSyM4">#}
 {#        <input class="layui-input" id="email" lay-verify="required" name="email" placeholder="电子邮箱" required type="text" value="">#}

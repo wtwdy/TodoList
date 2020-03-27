@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    TodoList首页
+{% endblock %}
+
+{% block content %}
+
+            <form method="post" action="{{ url_for("todo.add") }}">
+                <div class="input-group">
+                    {{ form.hidden_tag() }}
+                    {{ form.content() }}
+                    <span class="input-group-btn">
+                        <div class="btn-group">
+                    {{ form.category() }}
+                        </div>
+                    {{ form.submit() }}
+                    </span>
+
+
+{#                    <input type="text" class="form-control" placeholder="Add Todo">#}
+{#                        <span class="input-group-btn">#}
+{#                            <div class="btn-group">#}
+{#                                <button class="btn btn-default dropdown-toggle"#}
+{#                                        type="button"#}
+{#                                        data-toggle="dropdown" aria-haspopup="true"#}
+{#                                        aria-expanded="false">#}
+{#                                        分类<span class="caret"></span>#}
+{#                                </button>#}
+{#                                  <ul class="dropdown-menu">#}
+{#                                    <li><a href="#">1</a></li>#}
+{#                                    <li><a href="#">2</a></li>#}
+{#                                    <li><a href="#">3</a></li>#}
+{#                                    <li><a href="#">4</a></li>#}
+{#                                  </ul>#}
+{#                            </div>#}
+{#                                <button class="btn btn-default btn-todo-add"#}
+{#                                        type="button">添加任务</button>#}
+{#                        </span>#}
+
+
+
+                </div><!-- /input-group -->
+            </form>
+            <br>
+            <h3>任务清单</h3>
+
+            <table class="table table-hover">
+                <tr>
+                    <td>编号</td>
+                    <td>任务内容</td>
+                    <td>创建时间</td>
+                    <td>分类</td>
+                    <td>状态</td>
+                    <td>操作</td>
+                </tr>
+                {% for todo in todoObj.items %}
+                <tr>
+                    <td>{{ todo.id }}</td>
+                    <td>{{ todo.content }}</td>
+                    <td>{{ todo.add_time }}</td>
+                    <td>
+                        <a href="#" class="btn btn-success btn-xs active" role="button">{{ todo.category.name }}</a>
+                    </td>
+                    <td>
+                        {% if todo.status %}
+                        <a href="{{ url_for('todo.undo', id=todo.id) }}" class="btn btn-success btn-xs active" role="button">已完成</a>
+                        {% else %}
+                        <a href="{{ url_for("todo.done", id=todo.id) }}" class="btn btn-warning btn-xs active" role="button">未完成</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('todo.edit', id=todo.id) }}" class="btn btn-success btn-xs active" role="button">编辑</a>
+                        <a href="{{ url_for("todo.delete",id=todo.id) }}" class="btn btn-danger btn-xs active" role="button">删除</a>
+
+                    </td>
+                </tr>
+{#                <tr>#}
+{#                       <td>{{ todo.id }}</td>#}
+{#                    <td>{{ todo.content }}</td>#}
+{#                    <td>{{ todo.add_time }}</td>#}
+{#                    <td>#}
+{#                        <a href="#" class="btn btn-success btn-xs active" role="button">{{ todo.category.name }}</a>#}
+{#                    </td>#}
+{#                    <td>#}
+{#                        <a href="{{ url_for('todo.undo', id=todo.id) }}" id="edit-btn"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>#}
+{#                        &emsp;#}
+{#                        <a href="{{ url_for("todo.done", id=todo.id) }}" id="remove-btn"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>#}
+{#                    </td>#}
+{#                    <td>#}
+{#                        <a href="{{ url_for('todo.edit', id=todo.id) }}" id="edit-btn"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>#}
+{#                        &emsp;#}
+{#                        <a href="{{ url_for("todo.delete",id=todo.id) }}" id="remove-btn"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>#}
+{#                    </td>#}
+{#                </tr>#}
+                {% endfor %}
+            </table>
+            <br>
+                    <nav aria-label="...">
+                <ul class="pager">
+                    {% if todoObj.has_prev %}
+                        <li class="previous"><a href="{{ url_for('todo.list') }}?page={{ todoObj.prev_num }}"><span
+                                aria-hidden="true">&larr;</span> 上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> 上一页</a></li>
+                    {% endif %}
+
+
+                    <li class="previous disabled text-center"><a href="#">{{ todoObj.page }} / {{ todoObj.pages }}</a>
+                    </li>
+
+                    {% if todoObj.has_next %}
+                        <li class="next"><a href="{{ url_for('todo.list') }}?page={{ todoObj.next_num }}">下一页 <span
+                                aria-hidden="true">&rarr;</span></a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页 <span aria-hidden="true">&rarr;</span></a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+{#            <nav aria-label="...">#}
+{#              <ul class="pager">#}
+{#                  {% if todoObj.has_prev %}#}
+{#                <li class="previous"><a href="{{ url_for('todo.list') }}?page={{ todoObj.prev_num }}"><span aria-hidden="true">&larr;</span> 上一页</a></li>#}
+{#                  {% else %}#}
+{#                      <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> 上一页</a></li>#}
+{#                  {% endif %}#}
+{##}
+{#              <li class="previous disabled"><a href="#">{{ todoObj.page }} / {{ todoObj.pages }}</a></li>#}
+{#              {% if todoObj.has_next %}#}
+{#                <li class="next"><a href="{{ url_for('todo.list') }}?page={{ todoObj.next_num }}">下一页 <span aria-hidden="true">&rarr;</span></a></li>#}
+{#              {% else %}#}
+{#                  <li class="next disabled"><a href="#">下一页 <span aria-hidden="true">&rarr;</span></a></li>#}
+{#              {% endif %}#}
+{#              </ul>#}
+{#            </nav>#}
+
+{% endblock %}
+

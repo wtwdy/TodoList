@@ -12,6 +12,10 @@ from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
+import pymysql
+
+pymysql.install_as_MySQLdb()
+
 
 from config import config
 
@@ -52,7 +56,7 @@ def create_app(config_name = 'development'):
     # 关联配置信息
     app.config.from_object(config[config_name])
     # 实例化app对象,将配置信息和app关联起来
-    config[config_name].init_app(app)
+    # config[config_name].init_app(app)
     # 将bootstrap,mail,db 与app关联起来
     bootstrap.init_app(app)
     mail.init_app(app)
@@ -66,6 +70,11 @@ def create_app(config_name = 'development'):
     from app.auth import auth
     # url_prefix='/auth' 访问时前缀为/auth
     app.register_blueprint(auth)
+
+    from app.user import user
+    # 注册user蓝图
+    app.register_blueprint(user)
+
 
     from app.todo import todo
     # 访问时不需要前缀,无前缀时为todo
